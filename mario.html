@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Super Mario - World 1-1</title>
+<script src="https://accounts.google.com/gsi/client" async></script>
 <style>
   html,body{margin:0;height:100%;background:#000;display:flex;align-items:center;
     justify-content:center;font-family:'Courier New',monospace;overflow:hidden;}
@@ -16,9 +17,28 @@
     background:rgba(0,0,0,.55);font-size:24px;gap:14px;}
   #overlay button{font-family:inherit;font-size:16px;padding:8px 18px;cursor:pointer;
     background:#e52521;color:#fff;border:3px solid #fff;border-radius:6px;}
+  #login-screen{position:fixed;inset:0;background:#1a1a2e;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;z-index:100;gap:24px;}
+  #login-screen h1{color:#fbd000;font-size:36px;text-shadow:3px 3px #e52521;letter-spacing:4px;margin:0;}
+  #login-screen p{color:#aaa;font-size:14px;margin:0;}
+  #user-bar{position:fixed;top:10px;right:14px;display:none;align-items:center;gap:8px;
+    background:rgba(0,0,0,.6);padding:5px 10px;border-radius:20px;z-index:50;}
+  #user-bar img{width:28px;height:28px;border-radius:50%;border:2px solid #fbd000;}
+  #user-bar span{color:#fff;font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #logout-btn{color:#fbd000;font-size:11px;cursor:pointer;margin-left:4px;text-decoration:underline;}
 </style>
 </head>
 <body>
+<div id="login-screen">
+  <h1>🍄 SUPER MARIO</h1>
+  <p>登录后开始游戏</p>
+  <div id="google-btn"></div>
+</div>
+<div id="user-bar">
+  <img id="user-avatar" src="" alt="">
+  <span id="user-name"></span>
+  <span id="logout-btn">退出</span>
+</div>
 <div>
   <div id="wrap">
     <canvas id="c" width="256" height="240"></canvas>
@@ -461,7 +481,40 @@ document.getElementById('obtn').onclick=()=>location.reload();
 
 //================ 循环 ================
 function loop(){ if(!ended){update();} draw(); requestAnimationFrame(loop); }
-loop();
+
+//================ Google 登录 ================
+function startGame(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('user-bar').style.display='flex';
+  loop();
+}
+
+function handleCredentialResponse(response){
+  const payload = JSON.parse(atob(response.credential.split('.')[1]));
+  document.getElementById('user-avatar').src = payload.picture || '';
+  document.getElementById('user-name').textContent = payload.name || payload.email;
+  startGame();
+}
+
+document.getElementById('logout-btn').onclick = () => {
+  google.accounts.id.disableAutoSelect();
+  location.reload();
+};
+
+window.addEventListener('load', () => {
+  google.accounts.id.initialize({
+    client_id: '738270527005-e1ffcfjrn8hpnbpjg4vq17udje1mtt0v.apps.googleusercontent.com',
+    callback: handleCredentialResponse,
+    auto_select: false,
+  });
+  google.accounts.id.renderButton(document.getElementById('google-btn'), {
+    theme: 'filled_blue',
+    size: 'large',
+    text: 'signin_with',
+    shape: 'pill',
+    locale: 'zh_CN',
+  });
+});
 </script>
 </body>
 </html>
