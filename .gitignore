@@ -1,0 +1,9 @@
+.openclaw/
+.clawhub/
+.claude/
+__pycache__/
+*.pyc
+.stock_alert_state.json
+analyze_agent/
+code_agent/
+skills/
