@@ -484,29 +484,42 @@ document.getElementById('obtn').onclick=()=>location.reload();
 function loop(){ if(!ended){update();} draw(); requestAnimationFrame(loop); }
 
 //================ Google 登录 ================
-function startGame(){
+const STORAGE_KEY = 'mario_user';
+
+function startGame(user){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('user-bar').style.display='flex';
+  document.getElementById('user-avatar').src = user.picture || '';
+  document.getElementById('user-name').textContent = user.name || user.email;
   loop();
 }
 
 function handleCredentialResponse(response){
   const payload = JSON.parse(atob(response.credential.split('.')[1]));
-  document.getElementById('user-avatar').src = payload.picture || '';
-  document.getElementById('user-name').textContent = payload.name || payload.email;
-  startGame();
+  // 保存用户信息（含过期时间），7天内免登录
+  const user = { name: payload.name, email: payload.email, picture: payload.picture,
+                  exp: Date.now() + 7 * 24 * 3600 * 1000 };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+  startGame(user);
 }
 
 document.getElementById('logout-btn').onclick = () => {
+  localStorage.removeItem(STORAGE_KEY);
   google.accounts.id.disableAutoSelect();
   location.reload();
 };
 
 window.addEventListener('load', () => {
+  // 检查本地已登录状态
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved && saved.exp > Date.now()) { startGame(saved); return; }
+  } catch(e) {}
+
   google.accounts.id.initialize({
     client_id: '738270527005-e1ffcfjrn8hpnbpjg4vq17udje1mtt0v.apps.googleusercontent.com',
     callback: handleCredentialResponse,
-    auto_select: false,
+    auto_select: true,  // 已登录过的账号自动弹出 One Tap
   });
   google.accounts.id.renderButton(document.getElementById('google-btn'), {
     theme: 'filled_blue',
@@ -515,6 +528,7 @@ window.addEventListener('load', () => {
     shape: 'pill',
     locale: 'zh_CN',
   });
+  google.accounts.id.prompt(); // 触发 One Tap
 });
 </script>
 </body>
