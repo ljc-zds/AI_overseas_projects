@@ -10,7 +10,8 @@
     justify-content:center;font-family:'Courier New',monospace;overflow:hidden;}
   #wrap{position:relative;image-rendering:pixelated;}
   canvas{image-rendering:pixelated;background:#5c94fc;display:block;
-    width:min(96vw,1024px);height:auto;border:3px solid #222;box-shadow:0 0 30px #000;}
+    width:min(96vw, calc(90vh * 256 / 240));height:auto;
+    max-height:90vh;border:3px solid #222;box-shadow:0 0 30px #000;}
   #hint{color:#bbb;font-size:13px;text-align:center;margin-top:8px;letter-spacing:1px;}
   #overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
     flex-direction:column;color:#fff;font-weight:bold;text-shadow:2px 2px #000;
