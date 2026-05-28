@@ -17,7 +17,7 @@ from urllib.parse import urlparse, unquote
 TARGETS = [
     {
         "name": "CrazyGames",
-        "sitemap": "https://www.crazygames.com/sitemap.xml",
+        "sitemap": "https://www.crazygames.com/sitemap-index.xml",
     },
     {
         "name": "Miniclip",
@@ -25,7 +25,7 @@ TARGETS = [
     },
     {
         "name": "Poki",
-        "sitemap": "https://poki.com/sitemap.xml",
+        "sitemap": "https://poki.com/en/sitemaps/index.xml",
     },
 ]
 
